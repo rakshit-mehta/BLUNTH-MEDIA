@@ -582,10 +582,8 @@
   dotsWrap.addEventListener('click', () => { clearInterval(timer); timer = setInterval(() => go((idx + 1) % total), 5500); });
 
   // contact form -> sends straight to blunthmedia@gmail.com via Formspree
-  //const FORMSPREE_ID = "YOUR_ID_HERE"; https://form.typeform.com/to/eLQEs3Cs// <-- paste your Formspree form ID here (the part after /f/)
-  <div data-tf-live="01KTQ16MGFGAKH1Z1FQJ0ZK8Q5"></div>
-    src="//embed.typeform.com/next/embed.js">
-    
+  const FORMSPREE_ID = "https://form.typeform.com/to/eLQEs3Cs//"; //https://form.typeform.com/to/eLQEs3Cs// <-- paste your Formspree form ID here (the part after /f/)
+
   document.getElementById('send').addEventListener('click', async () => {
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
