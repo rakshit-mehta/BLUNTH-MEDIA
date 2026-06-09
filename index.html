@@ -532,48 +532,55 @@
 <script>
   // year
   // contact form -> sends straight to blunthmedia@gmail.com (no signup, no ID)
-  document.getElementById('send').addEventListener('click', async () => {
-    const name = document.getElementById('name').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const msg = document.getElementById('msg').value.trim();
-    const note = document.getElementById('note');
-    const btn = document.getElementById('send');
+  document.getElementById('year').textContent = new Date().getFullYear();
 
-    if (!name || !email) {
-      note.style.color = '#e0a05a';
-      note.textContent = 'Please add your name and email.';
-      return;
-    }
-
-    note.style.color = 'rgba(26,26,26,.6)';
-    note.textContent = 'Sending…';
-    btn.disabled = true;
-
-    try {
-      const res = await fetch('https://formsubmit.co/ajax/blunthmedia@gmail.com', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          name: name,
-          email: email,
-          message: msg,
-          _subject: 'New enquiry from ' + name,
-          _captcha: 'false'
-        })
-      });
-      if (!res.ok) throw new Error('send failed');
-      note.style.color = '#2f7d40';
-      note.textContent = 'Thanks, ' + name.split(' ')[0] + ' — your message is on its way.';
-      document.getElementById('name').value = '';
-      document.getElementById('email').value = '';
-      document.getElementById('msg').value = '';
-    } catch (e) {
-      note.style.color = '#e0a05a';
-      note.textContent = 'Something went wrong — please email us at blunthmedia@gmail.com.';
-    } finally {
-      btn.disabled = false;
-    }
+  // smooth-scroll all in-page links (Get Started, nav links, CTAs)
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const m = document.getElementById('menu');
+        if (m) m.classList.remove('open');
+      }
+    });
   });
+
+  // nav scroll state
+  const nav = document.getElementById('nav');
+  addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 12));
+
+  // mobile menu
+  const toggle = document.getElementById('toggle'), menu = document.getElementById('menu');
+  toggle.addEventListener('click', () => menu.classList.toggle('open'));
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu.classList.remove('open')));
+
+  // scroll reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.14 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // testimonials slider
+  const track = document.getElementById('track');
+  const dotsWrap = document.getElementById('dots');
+  const total = track.children.length;
+  let idx = 0;
+  for (let i = 0; i < total; i++){
+    const b = document.createElement('button');
+    b.className = 'dot-btn' + (i === 0 ? ' active' : '');
+    b.setAttribute('aria-label', 'Quote ' + (i+1));
+    b.addEventListener('click', () => go(i));
+    dotsWrap.appendChild(b);
+  }
+  function go(i){
+    idx = i;
+    track.style.transform = 'translateX(' + (-i * 100) + '%)';
+    dotsWrap.querySelectorAll('.dot-btn').forEach((d, n) => d.classList.toggle('active', n === i));
+  }
+  let timer = setInterval(() => go((idx + 1) % total), 5500);
+  dotsWrap.addEventListener('click', () => { clearInterval(timer); timer = setInterval(() => go((idx + 1) % total), 5500); });
 
   // contact form -> sends straight to blunthmedia@gmail.com via Formspree
   const FORMSPREE_ID = "https://form.typeform.com/to/eLQEs3Cs//"; //https://form.typeform.com/to/eLQEs3Cs// <-- paste your Formspree form ID here (the part after /f/)
